@@ -30,5 +30,4 @@ public:
 		
     stripe y,b,p,k,w,g;
     vector<stripe> stripes;
-    float width;
 };

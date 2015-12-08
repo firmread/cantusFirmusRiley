@@ -2,6 +2,9 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    
+    ofBackground(255);
+    
     y.c.setHex(0xA79C26);
     y.width = 9;
     
@@ -17,20 +20,31 @@ void ofApp::setup(){
     w.c.setHex(0xE3E2DE);
     w.width = 29;
     
+    g.c.set(127);
     g.width = 29;
+    
+    r.c.set(255,0,0);
+    r.width = 10;
     
     int counter = 0;
     
-    for (int i = 0; i <= 1000; i++){
-        if(i == 500) stripes.push_back(w);
-        else if(abs(i-500)%8 == 1) stripes.push_back(y);
-        else if(abs(i-500)%8 == 2) stripes.push_back(p);
-        else if(abs(i-500)%8 == 3) stripes.push_back(b);
+    for (int i = 0; i <= 10000; i++){
+        if(i == 5000) stripes.push_back(w);
         
-        else if(abs(i-500)%8 == 5) stripes.push_back(b);
-        else if(abs(i-500)%8 == 6) stripes.push_back(p);
-        else if(abs(i-500)%8 == 7) stripes.push_back(y);
-        else stripes.push_back(w);
+        else if(abs(i-5000)% 8 == 1) stripes.push_back(y);
+        else if(abs(i-5000)% 8 == 2) stripes.push_back(p);
+        else if(abs(i-5000)% 8 == 3) stripes.push_back(b);
+        
+        else if(abs(i-5000)% 8 == 5) stripes.push_back(b);
+        else if(abs(i-5000)% 8 == 6) stripes.push_back(p);
+        else if(abs(i-5000)% 8 == 7) stripes.push_back(y);
+        
+        else if(abs(i-5000)%12 == 0) stripes.push_back(w);
+        else if(abs(i-5000)%12 == 4) stripes.push_back(g);
+        else if(abs(i-5000)%12 == 8) stripes.push_back(k);
+
+        
+        else stripes.push_back(r);
     }
     
 }
@@ -43,33 +57,44 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofTranslate(mouseX, 0);
-    float noise = ofNoise(ofGetElapsedTimef()*0.1);
+    //noise between 0 & screenwidth
+    
+    float zoomNoise = ofNoise(ofGetElapsedTimef()*0.1);
     // cinematic = 0.1 // motion sickness = 10
-    float maxZoomOut = ofMap(mouseY, 0, ofGetHeight(), 0.3, 2.5, true);
-    float zoom = ofMap(noise, 0, 1,.05, maxZoomOut, true);
+    
+    float microScale = ofMap(mouseY, 0, ofGetHeight()/2, 0.015, 1.0, true);
+    float macroScale = ofMap(mouseY, ofGetHeight()/2, ofGetHeight(), 1.0, 2.5,true);
+
+    float maxZoomOut = mouseY < ofGetHeight()/2 ? microScale : macroScale;
+//     zoom range control
+    float zoom = ofMap(zoomNoise, 0, 1, .0001, maxZoomOut, true);
+
+//    float microScale = ofMap(zoomNoise, 0, 0.5, 0.001, 1.0, true);
+//    float macroScale = ofMap(zoomNoise, 0.5, 1.0, 1.0, 2.5, true);
+//    
+//    float zoom = zoomNoise < 0.5 ? microScale : macroScale;
     
     ofScale(zoom, 1);
-    cout << noise << endl;
     
-    stripes[500].x = -stripes[500].width/2;
-    ofSetColor(stripes[500].c);
-    ofDrawRectangle(stripes[500].x, 0, stripes[500].width, ofGetWidth());
+    //midline
+    stripes[5000].x = -stripes[5000].width/2;
+    ofSetColor(stripes[5000].c);
+    ofDrawRectangle(stripes[5000].x, 0, stripes[5000].width, ofGetWidth());
     
-    for (int i = 499; i> 0; i--){
+    //loop to the left
+    for (int i = 4999; i> 0; i--){
         ofSetColor(stripes[i].c);
         stripes[i].x = stripes[i+1].x - stripes[i].width;
         ofDrawRectangle(stripes[i].x, 0, stripes[i].width, ofGetHeight());
     }
     
-    for (int i = 501; i< stripes.size();i++) {
+    //loop to the right
+    for (int i = 5001; i< stripes.size();i++) {
         ofSetColor(stripes[i].c);
         stripes[i].x = stripes[i-1].x + stripes[i-1].width;
         ofDrawRectangle(stripes[i].x, 0, stripes[i].width, ofGetHeight());
     }
     
-    
-    ofSetColor(sin(ofGetElapsedTimef()*10)*100, 0,0);
-    ofDrawRectangle(stripes[stripes.size()/2].x, 0, stripes[stripes.size()/2].width, ofGetWidth());
     
 }
 

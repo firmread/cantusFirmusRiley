@@ -28,6 +28,6 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 		
-    stripe y,b,p,k,w,g;
+    stripe y,b,p,k,w,g,r;
     vector<stripe> stripes;
 };
